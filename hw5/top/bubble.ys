@@ -1,0 +1,55 @@
+
+# Execution begins at address 0 
+	.pos 0
+	irmovq stack, %rsp  	# Set up stack pointer
+	call main		# Execute main program
+	halt			# Terminate program 
+
+# Array of 4 elements
+	.align 8
+array:	.quad 0xdddd          # These values should get sorted
+        .quad 0xeeee
+        .quad 0xbbbb
+        .quad 0xaaaa
+        .quad 0xffff
+        .quad 0xcccc
+        .quad 0x0101          # This value should not change
+
+
+main:	irmovq array,%rdi
+		irmovq $6,%rsi
+		call Bubble		# Bubble(array, )
+		ret
+
+# void Bubble(long *data, long count)
+Bubble:
+   irmovq  $8, %r8
+begin:
+    rrmovq  %rsi, %rax
+    xorq    %rdi, %rax
+    je      sorted
+    subq    %r8, %rsi
+    rrmovq  %rdi, %rcx
+    rrmovq  %rdi, %rdx
+round:
+    rrmovq  %rcx, %rax
+    xorq    %rsi, %rax
+    je      begin
+    addq    %r8, %rdx
+    mrmovq  (%rcx), %r10
+    mrmovq  (%rdx), %r11
+    rrmovq  %r10, %rax
+    subq    %r11, %rax
+    jle     noswap
+    rmmovq  %r10, (%rdx)
+    rmmovq  %r11, (%rcx)
+noswap:
+    addq    %r8, %rcx
+    jmp     round
+sorted:
+    ret
+
+
+# Stack starts here and grows to lower addresses
+	.pos 0x200
+stack:
