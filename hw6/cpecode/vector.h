@@ -2,9 +2,10 @@
 
 /* to change base data type or operations performed in combine(),
  * change the next lines of code  */
-typedef int data_t;  /* base data type: try int, long, float, double */
-#define OP +         /* operator types: + and * */
-#define IDENT 0      /* set to identity element of above operator */
+typedef int data_t; /* base data type: try int, long, float, double */
+#define OP +        /* operator types: + and * */
+#define IDENT 0     /* set to identity element of above operator */
+                    /* 0 for addition and 1 for multiplication */
 
 typedef struct {
     long int len;
@@ -13,9 +14,8 @@ typedef struct {
 } vec_rec, *vec_ptr;
 
 /* macro version of function */
-#define GET_VEC_ELEMENT(v,index,dest) \
-    !((index) < 0 || (index) >= (v)->len) && \
-    *(dest) = (v)->data[(index)], 1;
+#define GET_VEC_ELEMENT(v, index, dest)                                                            \
+    !((index) < 0 || (index) >= (v)->len) && *(dest) = (v)->data[(index)], 1;
 
 /* function prototypes defined in vector.c */
 vec_ptr new_vec(long int len);
