@@ -186,10 +186,10 @@ unsigned measure(void) {
     int cnt = 1;
     do {
         int c = cnt;
-        combine1(V1, &result); /* first call to warm up cache */
+        combine3(V1, &result); /* first call to warm up cache */
         start_counter();
         while (c-- > 0)
-            combine1(V1, &result);
+            combine3(V1, &result);
         cmeas = get_counter();
         cycles = cmeas / cnt;
         cnt += cnt;

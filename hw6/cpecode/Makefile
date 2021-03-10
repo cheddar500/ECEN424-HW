@@ -16,10 +16,10 @@ timer.o: timer.c timer.h
 	gcc -c -O2 timer.c       # don't increase above -O2!
 
 getcpe.o: getcpe.c timer.h vector.h
-	gcc -c $(CFLAGS0) getcpe.c  # edit this line
+	gcc -c $(CFLAGS2) getcpe.c  # edit this line
 
 vector.o: vector.c vector.h
-	gcc -c $(CFLAGS0) vector.c  # and this one
+	gcc -c $(CFLAGS2) vector.c  # and this one
 
 clean:
 	rm *.o getcpe
