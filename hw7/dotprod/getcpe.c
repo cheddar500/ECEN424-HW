@@ -229,11 +229,12 @@ void dotproduct2(vec_ptr u, vec_ptr v, data_t *dest) {
 /* Directly access the vector data */
 void dotproduct3(vec_ptr u, vec_ptr v, data_t *dest) {
     long int i;
+    long length = vec_length(u);
     data_t *datav = get_vec_start(v);
     data_t *datau = get_vec_start(u);
 
     *dest = 1.0;
-    for (i = 0; i < vec_length(u); i++) {
+    for (i = 0; i < length; i++) {
         *dest = *dest + datau[i] * datav[i];
     }
 }
@@ -242,13 +243,30 @@ void dotproduct3(vec_ptr u, vec_ptr v, data_t *dest) {
 /* Accumulate results in a local variable */
 void dotproduct4(vec_ptr u, vec_ptr v, data_t *dest) {
     long int i;
-    *dest = 1.0;
-
+    long length = vec_length(u);
     data_t *datav = get_vec_start(v);
     data_t *datau = get_vec_start(u);
-    for (i = 0; i < vec_length(u); i++) {
-        *dest = *dest + datau[i] * datav[i];
+    data_t acc = 1.0;
+
+    for (i = 0; i < length; i++) {
+        acc = acc + datau[i] * datav[i];
     }
+    *dest = acc;
+}
+
+/* the fifth function(s) we want to measure */
+/* Unroll the loop by 2 */
+void dotproduct5(vec_ptr u, vec_ptr v, data_t *dest) {
+    long int i;
+    long length = vec_length(u);
+    data_t *datav = get_vec_start(v);
+    data_t *datau = get_vec_start(u);
+    data_t acc = 1.0;
+
+    for (i = 0; i < length; i++) {
+        acc = acc + datau[i] * datav[i];
+    }
+    *dest = acc;
 }
 
 /* repeatedly calls the function to measure until the total execution
@@ -258,10 +276,10 @@ unsigned measure(void) {
     int cnt = 1;
     do {
         int c = cnt;
-        dotproduct3(V1, V2, &result); /* first call to warm up cache */
+        dotproduct5(V1, V2, &result); /* first call to warm up cache */
         start_counter();
         while (c-- > 0)
-            dotproduct3(V1, V2, &result);
+            dotproduct5(V1, V2, &result);
         cmeas = get_counter();
         cycles = cmeas / cnt;
         cnt += cnt;
