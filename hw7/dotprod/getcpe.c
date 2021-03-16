@@ -259,14 +259,60 @@ void dotproduct4(vec_ptr u, vec_ptr v, data_t *dest) {
 void dotproduct5(vec_ptr u, vec_ptr v, data_t *dest) {
     long int i;
     long length = vec_length(u);
+    long limit = length - 1;
     data_t *datav = get_vec_start(v);
     data_t *datau = get_vec_start(u);
     data_t acc = 1.0;
 
-    for (i = 0; i < length; i++) {
+    for (i = 0; i < limit; i += 2) {
+        acc = (acc + datau[i] * datav[i]) + (datau[i + 1] * datav[i + 1]);
+    }
+    for (; i < length; i++) {
         acc = acc + datau[i] * datav[i];
     }
     *dest = acc;
+}
+
+/* the sixth function(s) we want to measure */
+/* Unroll the loop by 2 with 2-way parallelism */
+void dotproduct6(vec_ptr u, vec_ptr v, data_t *dest) {
+    long int i;
+    long length = vec_length(u);
+    long limit = length - 1;
+    data_t *datav = get_vec_start(v);
+    data_t *datau = get_vec_start(u);
+    data_t acc0 = 1.0;
+    data_t acc1 = 1.0;
+
+    for (i = 0; i < limit; i += 2) {
+        acc0 = (acc0 + datau[i] * datav[i]);
+        acc1 = (acc1 + datau[i + 1] * datav[i + 1]);
+    }
+    for (; i < length; i++) {
+        acc0 = acc0 + datau[i] * datav[i];
+    }
+    *dest = acc0 + acc1;
+}
+
+/* the seventh function(s) we want to measure */
+/* Unroll the loop by 2 and reassociate */
+void dotproduct7(vec_ptr u, vec_ptr v, data_t *dest) {
+    long int i;
+    long length = vec_length(u);
+    long limit = length - 1;
+    data_t *datav = get_vec_start(v);
+    data_t *datau = get_vec_start(u);
+    data_t acc0 = 1.0;
+    data_t acc1 = 1.0;
+
+    for (i = 0; i < limit; i += 2) {
+        acc0 = (acc0 + datau[i] * datav[i]);
+        acc1 = (acc1 + datau[i + 1] * datav[i + 1]);
+    }
+    for (; i < length; i++) {
+        acc0 = acc0 + datau[i] * datav[i];
+    }
+    *dest = acc0 + acc1;
 }
 
 /* repeatedly calls the function to measure until the total execution
@@ -276,10 +322,10 @@ unsigned measure(void) {
     int cnt = 1;
     do {
         int c = cnt;
-        dotproduct5(V1, V2, &result); /* first call to warm up cache */
+        dotproduct7(V1, V2, &result); /* first call to warm up cache */
         start_counter();
         while (c-- > 0)
-            dotproduct5(V1, V2, &result);
+            dotproduct7(V1, V2, &result);
         cmeas = get_counter();
         cycles = cmeas / cnt;
         cnt += cnt;
