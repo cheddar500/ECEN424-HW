@@ -302,17 +302,15 @@ void dotproduct7(vec_ptr u, vec_ptr v, data_t *dest) {
     long limit = length - 1;
     data_t *datav = get_vec_start(v);
     data_t *datau = get_vec_start(u);
-    data_t acc0 = 1.0;
-    data_t acc1 = 1.0;
+    data_t acc = 1.0;
 
     for (i = 0; i < limit; i += 2) {
-        acc0 = (acc0 + datau[i] * datav[i]);
-        acc1 = (acc1 + datau[i + 1] * datav[i + 1]);
+        acc = acc + (datau[i] * datav[i] + datau[i + 1] * datav[i + 1]);
     }
     for (; i < length; i++) {
-        acc0 = acc0 + datau[i] * datav[i];
+        acc = acc + datau[i] * datav[i];
     }
-    *dest = acc0 + acc1;
+    *dest = acc;
 }
 
 /* repeatedly calls the function to measure until the total execution
