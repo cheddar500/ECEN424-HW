@@ -16,7 +16,7 @@ timer.o: timer.c timer.h
 	gcc -c -O2 timer.c       # don't increase above -O2!
 
 mountain.o: mountain.c timer.h
-	gcc -c $(CFLAGS3) mountain.c
+	gcc -c $(CFLAGS4) mountain.c
 
 clean:
 	rm *.o mountain
