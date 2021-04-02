@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 /* initialization makes this x a strong symbol */
-int x = 0;
+int x;
 int y;
 
 int p1() { x = 7; }
